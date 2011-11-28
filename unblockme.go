@@ -13,39 +13,37 @@ type Block struct {
 	parentGrid *Grid
 }
 
-type Grid struct {
-	state [6][6]*Block
-}
+type Grid  [6][6]*Block;
 
 func (self *Grid) RemoveBlock(b *Block) {
     b.parentGrid = nil;
-    self.state[b.x][b.y] = nil;
+    self[b.x][b.y] = nil;
     var i int;
     for i = 1; i < b.lenght; i++ {
         if b.vertical {
-            self.state[b.x][b.y + i] = nil;
+            self[b.x][b.y + i] = nil;
         } else {
-            self.state[b.x +i][b.y] = nil;   
+            self[b.x +i][b.y] = nil;   
         }
     }    
 }
 
 func (self *Grid) Solved() bool {
-    return self.state[5][2] != nil && self.state[5][2].special;
+    return self[5][2] != nil && self[5][2].special;
 }
 
 func (self *Grid) AddBlock(b *Block) {
     b.parentGrid = self;
     self.AssertEmpty(b.x, b.y);   
-    self.state[b.x][b.y] = b;
+    self[b.x][b.y] = b;
     var i int;
     for i = 1; i < b.lenght; i++ {
         if b.vertical {
             self.AssertEmpty(b.x, b.y +i);
-            self.state[b.x][b.y + i] = b;
+            self[b.x][b.y + i] = b;
         } else {
             self.AssertEmpty(b.x + i, b.y);
-            self.state[b.x +i][b.y] = b;   
+            self[b.x +i][b.y] = b;   
         }
     }       
 }
@@ -82,7 +80,7 @@ func (self *Grid) SolveIt(visited map[string]bool, changes int) (solved bool, to
     var i,j int;
     for i = 0; i < 6; i++ {
         for j = 0; j < 6; j++ {
-            var b = self.state[i][j];
+            var b = self[i][j];
             if b == nil {
                 continue;
             }
@@ -104,7 +102,7 @@ func (self *Grid) SolveIt(visited map[string]bool, changes int) (solved bool, to
 }
 
 func (self *Grid) AssertEmpty(x,y int) bool {
-    if self.state[x][y] != nil {
+    if self[x][y] != nil {
         fmt.Printf("A block already exists [%d,%d]\n", x, y);
         return false;    
     }
@@ -123,18 +121,18 @@ func (self *Block) IsExitPosition() bool {
 func (self *Block) HasMovement(clockwise bool)  bool {
 
     if self.vertical {
-        if !clockwise && self.y > 0 && self.parentGrid.state[self.x][self.y - 1] == nil {
+        if !clockwise && self.y > 0 && self.parentGrid[self.x][self.y - 1] == nil {
             return true;
         }
-        if clockwise && self.y + self.lenght  < 6 && self.parentGrid.state[self.x][self.y + self.lenght] == nil {
+        if clockwise && self.y + self.lenght  < 6 && self.parentGrid[self.x][self.y + self.lenght] == nil {
             return true;
         }
         return false;
     } else {
-        if !clockwise && self.x > 0 && self.parentGrid.state[self.x -1][self.y] == nil {
+        if !clockwise && self.x > 0 && self.parentGrid[self.x -1][self.y] == nil {
             return true;
         }
-        if clockwise && self.x  + self.lenght < 6 && self.parentGrid.state[self.x + self.lenght][self.y] == nil {
+        if clockwise && self.x  + self.lenght < 6 && self.parentGrid[self.x + self.lenght][self.y] == nil {
             return true;
         }
         return false;
@@ -164,11 +162,11 @@ func (self *Grid) String() string {
 	var j int;
 	for i = 0; i < 6; i++ {
 	   for j = 0; j < 6; j++ {
-	       if self.state[j][i] != nil {
-	           if self.state[j][i].special {
+	       if self[j][i] != nil {
+	           if self[j][i].special {
                 result += "X"    
 	           } else {
-                result += strconv.Itoa(self.state[j][i].number)
+                result += strconv.Itoa(self[j][i].number)
 	           }
 			} else {
 				result += "0"
@@ -302,3 +300,4 @@ func main() {
     fmt.Printf("Solved with %d changes\n", changes);
 
 }
+
